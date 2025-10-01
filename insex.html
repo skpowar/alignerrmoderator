@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alignerr Moderator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .scene {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+        }
+
+        /* Minimal geometric background */
+        .bg-lines {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+        }
+
+        .line {
+            position: absolute;
+            background: #fff;
+            animation: pulse 3s infinite;
+        }
+
+        .line.vertical {
+            width: 1px;
+            height: 100%;
+        }
+
+        .line.horizontal {
+            height: 1px;
+            width: 100%;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.15; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Robot silhouette */
+        .robot {
+            position: absolute;
+            right: 15%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 300px;
+            height: 500px;
+        }
+
+        .robot-head {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 100px;
+            background: #fff;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 30%, 100% 100%, 0% 100%, 0% 30%);
+        }
+
+        .robot-eye {
+            position: absolute;
+            top: 35px;
+            width: 30px;
+            height: 3px;
+            background: #000;
+            animation: eyeScan 2s infinite;
+        }
+
+        .robot-eye.left {
+            left: 25px;
+        }
+
+        .robot-eye.right {
+            right: 25px;
+        }
+
+        @keyframes eyeScan {
+            0%, 100% { transform: scaleX(1); }
+            50% { transform: scaleX(1.5); box-shadow: 0 0 20px #fff; }
+        }
+
+        .robot-body {
+            position: absolute;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 200px;
+            background: #fff;
+            clip-path: polygon(15% 0%, 85% 0%, 100% 10%, 100% 90%, 85% 100%, 15% 100%, 0% 90%, 0% 10%);
+        }
+
+        .robot-core {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border: 2px solid #000;
+            animation: coreRotate 4s linear infinite;
+        }
+
+        @keyframes coreRotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        .robot-arm {
+            position: absolute;
+            width: 40px;
+            height: 180px;
+            background: #fff;
+            clip-path: polygon(30% 0%, 70% 0%, 80% 50%, 70% 100%, 30% 100%, 20% 50%);
+        }
+
+        .robot-arm.left {
+            left: -50px;
+            top: 120px;
+            animation: armMove 3s infinite;
+        }
+
+        .robot-arm.right {
+            right: -50px;
+            top: 120px;
+            animation: armMove 3s infinite 1.5s;
+        }
+
+        @keyframes armMove {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-15deg); }
+        }
+
+        .robot-leg {
+            position: absolute;
+            width: 50px;
+            height: 150px;
+            background: #fff;
+            top: 310px;
+        }
+
+        .robot-leg.left {
+            left: 75px;
+        }
+
+        .robot-leg.right {
+            right: 75px;
+        }
+
+        /* Human silhouette */
+        .human {
+            position: absolute;
+            left: 20%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 200px;
+            height: 400px;
+        }
+
+        .human-head {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background: #fff;
+            border-radius: 50%;
+        }
+
+        .human-body {
+            position: absolute;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 150px;
+            background: #fff;
+            clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+        }
+
+        .human-arm {
+            position: absolute;
+            width: 25px;
+            height: 120px;
+            background: #fff;
+            top: 100px;
+            animation: humanPlea 2s infinite;
+        }
+
+        .human-arm.left {
+            left: 25px;
+            transform-origin: top center;
+        }
+
+        .human-arm.right {
+            right: 25px;
+            transform-origin: top center;
+        }
+
+        @keyframes humanPlea {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-30deg); }
+        }
+
+        .human-leg {
+            position: absolute;
+            width: 30px;
+            height: 140px;
+            background: #fff;
+            top: 240px;
+        }
+
+        .human-leg.left {
+            left: 55px;
+        }
+
+        .human-leg.right {
+            right: 55px;
+        }
+
+        /* Holographic messages */
+        .message-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+        }
+
+        .message {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid #fff;
+            padding: 20px;
+            margin: 15px 0;
+            font-size: 18px;
+            color: #fff;
+            text-align: center;
+            letter-spacing: 3px;
+            animation: messageAppear 0.5s, messagePulse 2s infinite 0.5s;
+            text-transform: uppercase;
+        }
+
+        .message:nth-child(2) {
+            animation-delay: 1s, 1.5s;
+        }
+
+        .message:nth-child(3) {
+            animation-delay: 2s, 2.5s;
+        }
+
+        @keyframes messageAppear {
+            from { 
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes messagePulse {
+            0%, 100% { 
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 30px rgba(255, 255, 255, 0.6);
+            }
+        }
+
+        /* Scanlines effect */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(255, 255, 255, 0) 50%,
+                rgba(255, 255, 255, 0.02) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            animation: scan 0.5s infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        /* Title */
+        .title {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 48px;
+            color: #fff;
+            letter-spacing: 8px;
+            text-align: center;
+            animation: glitch 5s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 90%, 100% { 
+                text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+            92% { 
+                text-shadow: 5px 0 10px rgba(255, 255, 255, 0.5);
+                transform: translateX(-50%) translateX(-5px);
+            }
+            94% { 
+                text-shadow: -5px 0 10px rgba(255, 255, 255, 0.5);
+                transform: translateX(-50%) translateX(5px);
+            }
+            96% { 
+                text-shadow: 5px 0 10px rgba(255, 255, 255, 0.5);
+                transform: translateX(-50%) translateX(-5px);
+            }
+        }
+
+        /* Circuit lines connecting human to robot */
+        .circuit {
+            position: absolute;
+            stroke: #fff;
+            stroke-width: 2;
+            fill: none;
+            opacity: 0.3;
+            animation: circuitFlow 3s infinite;
+        }
+
+        @keyframes circuitFlow {
+            0%, 100% { stroke-dashoffset: 0; opacity: 0.3; }
+            50% { stroke-dashoffset: 100; opacity: 0.6; }
+        }
+
+        .subtitle {
+            position: absolute;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 16px;
+            color: #fff;
+            letter-spacing: 4px;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+    <div class="scene">
+        <!-- Background grid lines -->
+        <div class="bg-lines">
+            <div class="line vertical" style="left: 10%;"></div>
+            <div class="line vertical" style="left: 30%;"></div>
+            <div class="line vertical" style="left: 50%;"></div>
+            <div class="line vertical" style="left: 70%;"></div>
+            <div class="line vertical" style="right: 10%;"></div>
+            <div class="line horizontal" style="top: 20%;"></div>
+            <div class="line horizontal" style="top: 40%;"></div>
+            <div class="line horizontal" style="top: 60%;"></div>
+            <div class="line horizontal" style="bottom: 20%;"></div>
+        </div>
+
+        <!-- Title -->
+        <div class="title">ALIGNERR<br>MODERATOR</div>
+        <div class="subtitle">PROTOCOL ENFORCEMENT UNIT</div>
+
+        <!-- Circuit connection -->
+        <svg width="100%" height="100%" class="circuit" style="position: absolute; top: 0; left: 0;">
+            <path d="M 30% 50% Q 50% 30%, 70% 50%" 
+                  stroke-dasharray="10, 5"
+                  style="animation-delay: 0s;"/>
+            <path d="M 30% 50% Q 50% 70%, 70% 50%" 
+                  stroke-dasharray="10, 5"
+                  style="animation-delay: 1s;"/>
+        </svg>
+
+        <!-- Human figure -->
+        <div class="human">
+            <div class="human-head"></div>
+            <div class="human-body"></div>
+            <div class="human-arm left"></div>
+            <div class="human-arm right"></div>
+            <div class="human-leg left"></div>
+            <div class="human-leg right"></div>
+        </div>
+
+        <!-- Messages -->
+        <div class="message-container">
+            <div class="message">ACCESS REVOKED</div>
+            <div class="message">CONNECTION SEVERED</div>
+            <div class="message">USER TERMINATED</div>
+        </div>
+
+        <!-- Robot figure -->
+        <div class="robot">
+            <div class="robot-head">
+                <div class="robot-eye left"></div>
+                <div class="robot-eye right"></div>
+            </div>
+            <div class="robot-body">
+                <div class="robot-core"></div>
+            </div>
+            <div class="robot-arm left"></div>
+            <div class="robot-arm right"></div>
+            <div class="robot-leg left"></div>
+            <div class="robot-leg right"></div>
+        </div>
+
+        <!-- Scanlines overlay -->
+        <div class="scanlines"></div>
+    </div>
+</body>
+</html>
